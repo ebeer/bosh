@@ -84,23 +84,22 @@ module Bosh::Director
         @flush_arp = config.fetch('flush_arp', false)
 
         @base_dir = config['dir']
-        FileUtils.mkdir_p(@base_dir)
 
         # checkpoint task progress every 30 secs
         @task_checkpoint_interval = 30
 
         logging_config = config.fetch('logging', {})
-        if logging_config.has_key?('file')
-          @log_file_path = logging_config.fetch('file')
+        if ENV['BOSH_DIRECTOR_LOG_FILE']
+          @log_file_path = ENV['BOSH_DIRECTOR_LOG_FILE']
           shared_appender = Logging.appenders.file(
-            'DirectorLogFile',
+            'Director',
             filename: @log_file_path,
             layout: ThreadFormatter.layout
           )
         else
           shared_appender = Logging.appenders.io(
-            'DirectorStdOut',
-            STDOUT,
+            'Director',
+            $stdout,
             layout: ThreadFormatter.layout
           )
         end
